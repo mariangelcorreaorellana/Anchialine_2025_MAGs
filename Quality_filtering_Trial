@@ -1,14 +1,12 @@
-fastp \ #running FastP for trimming and quality filtering
-    --in1 {input.r1i} --in2 {input.r2i} \
-    --out1 {output.r1o} --out2 {output.r2o} \
-    --trim_poly_g \
-    --trim_poly_x \
-    --low_complexity_filter \
-    --n_base_limit 5 \
-    --qualified_quality_phred 20 \
-    --length_required 60 \
-    --thread {threads} \
-    --html {output.fastp_html} \
-    --json {output.fastp_json} \
-    --adapter_sequence {params.adapter1} \
-    --adapter_sequence_r2 {params.adapter2}
+fastp \ # running fastp for trimming and quality filtering
+    --in1 {input.r1i} --in2 {input.r2i} \         # paired-end input FASTQ files (read1, read2)
+    --out1 {output.r1o} --out2 {output.r2o} \    # paired-end output FASTQ files (trimmed/filtered)
+    --trim_poly_g \                               # trim poly-G tails (common NextSeq/NovaSeq artifact)
+    --trim_poly_x \                               # trim poly-X tails (remove long homopolymer tails)
+    --low_complexity_filter \                     # drop reads with low sequence complexity
+    --n_base_limit 5 \                            # drop reads with more than 5 ambiguous bases (Ns)
+    --qualified_quality_phred 20 \                # Q-score threshold used to define "qualified" bases (e.g. Q20)
+    --length_required 60 \                        # drop reads shorter than 60 bp after trimming
+    --thread {threads} \                          # number of CPU threads to use
+    --html {output.fastp_html} \                  # write an HTML report with QC summary/plots
+    --json {output.fastp_json} \                  # write a machine-readable JSON report
