@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+kraken2-build --download-library human /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/databases/kraken2_db/library
+#I used the command above to download the libraries for human, fungi, protozoa, and plants
+# Replace [DB_NAME] with your database directory (e.g., SEDIMENT_DB)
+# Replace [YOUR_THREAD_COUNT] with your core count (e.g., 32)
+
+kraken2-build --build --db /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/databases/kraken2_db --threads 25
+#now I'm going to run the host mapping 
+kraken2 --db /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/databases/kraken2_db \
+        --threads 25 \
+        --paired HM-24_S1_L001_R1_001_trimmed.fastq.gz HM-24_S1_L001_R2_001_trimmed.fastq.gz  \
+        --output trial_HMsample.kraken2.out \
+        --report trial_HMsample.kreport
