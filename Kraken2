@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+kraken2-build --download-library human /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/databases/kraken2_db/library
+#I used the command above to download the libraries for human, fungi, protozoa, and plants
+# Replace [DB_NAME] with your database directory (e.g., SEDIMENT_DB)
+# Replace [YOUR_THREAD_COUNT] with your core count (e.g., 32)
+
+kraken2-build --build --db /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/databases/kraken2_db --threads 25
+#now I'm going to run the host mapping 
+kraken2 --db /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/databases/kraken2_db \
+        --threads 25 \
+        --paired HM-24_S1_L001_R1_001_trimmed.fastq.gz HM-24_S1_L001_R2_001_trimmed.fastq.gz  \
+        --output trial_HMsample.kraken2.out \
+        --report trial_HMsample.kreport
+
+# Exclude all reads classified as Eukaryota (TaxID: 2759) or any descendant (i.e., all Fungi, Plant, Protozoa, Human)
+
+extract_kraken_reads.py \
+    -k trial_HMsample.kraken2.out \
+    -s HM-24_S1_L001_R1_001_trimmed.fastq.gz \
+    -s2 HM-24_S1_L001_R2_001_trimmed.fastq.gz \
+    -t 2759 \
+    -o non_host_HM_trial_R1.fastq \
+    -o2 non_host_HM_trial_R2.fastq \
+    --include-children \
+    --threads 30 \
+    --exclude \
+    --fastq-output
