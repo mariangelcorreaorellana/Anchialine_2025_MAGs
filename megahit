@@ -1,0 +1,7 @@
+megahit \
+    -t 40 \
+    --verbose \
+    --min-contig-len 2500 \
+    -1 non_host_HM_trial_R1.fastq -2 non_host_HM_trial_R2.fastq \
+    -f \
+    -o **HM_Trial_Assembly**
