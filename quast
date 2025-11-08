@@ -1,0 +1,4 @@
+quast \
+    -o HM_trial_quast_report \
+    --threads 40 \
+    /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/Trial_Run/HM_Trial_Assemblies/final.contigs.fa 
