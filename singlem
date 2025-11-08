@@ -1,0 +1,13 @@
+singlem pipe \
+    -1 non_host_HM_trial_R1.fastq \
+    -2 non_host_HM_trial_R2.fastq \
+    --otu-table trial_HM_OTU_table.tsv \
+    --taxonomic-profile HM_Trial_sample.condensed_profile.tsv \
+    --threads 25
+
+singlem read_fraction \
+    -1 non_host_HM_trial_R1.fastq \
+    -2 non_host_HM_trial_R2.fastq \
+    --input-profile HM_Trial_sample.condensed_profile.tsv \
+    --output-tsv read_fraction.tsv \
+    --output-per-taxon-read-fractions HM_Trial.read_fraction_taxa
