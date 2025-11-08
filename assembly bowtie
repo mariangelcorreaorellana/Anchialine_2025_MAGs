@@ -1,0 +1,5 @@
+bowtie2-build \
+    --large-index \
+    --threads 50 \
+    /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/Trial_Run/HM_Trial_Assembliesfinal.contigs.fa \
+    bowtie2_index/assembly_index
