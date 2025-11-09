@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# --- VARIABLES ---
+# Set the output directory and contigs file path
+# We'll use a new subdirectory for MetaBAT2 output
+OUTDIR="metabat2_output"
+CONTIGS="/stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/Trial_Run/HM_Trial_Assemblies/final.contigs.fa"
+THREADS=50
+BAMFILE="reads_to_contigs_trial.sorted.bam"
+
+# Create the primary output directory
+mkdir -p "$OUTDIR"
+
+# --- 1. SUMMARIZE CONTIG DEPTHS ---
+# Note: The output file name is customized for MetaBAT
+jgi_summarize_bam_contig_depths \
+    --outputDepth "$OUTDIR/metabat_depth.txt" \
+    "$BAMFILE"
+
+# --- 2. RUN METABAT2 ---
+# Ensure the final output directory exists before MetaBAT2 runs
+mkdir -p "$OUTDIR/metabat2_bins"
+
+metabat2 \
+    -i "$CONTIGS" \
+    -a "$OUTDIR/metabat_depth.txt" \
+    -o "$OUTDIR/metabat2_bins/bin" \
+    -m 1500 \
+    -t "$THREADS" \
+    --unbinned
+
+# --- NOTE ---
+# MetaBAT2 automatically names its bins with a .fa extension,
+# so no final 'mv' cleanup step is needed here, unlike MaxBin2.
