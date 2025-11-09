@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# --- VARIABLES ---
+# Set the output directory and contigs file path
+OUTDIR="maxbin2_output"
+CONTIGS="/stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/Trial_Run/HM_Trial_Assemblies/final.contigs.fa"
+THREADS=50
+BAMFILE="reads_to_contigs_trial.sorted.bam"
+
+# Create the output directory if it doesn't exist
+mkdir -p "$OUTDIR"
+
+# --- 1. SUMMARIZE CONTIG DEPTHS ---
+jgi_summarize_bam_contig_depths \
+    --outputDepth "$OUTDIR/mb2_master_depth.txt" \
+    --noIntraDepthVariance \
+    "$BAMFILE"
+
+# --- 2. SPLIT DEPTH FILE ---
+# Calculate total number of columns
+A=($(head -n 1 "$OUTDIR/mb2_master_depth.txt"))
+N=${#A[*]} # Corrected array syntax
+
+# Split the contig depth file into multiple files
+if [ -f "$OUTDIR/mb2_abund_list.txt" ]; then rm "$OUTDIR/mb2_abund_list.txt"; fi
+for i in $(seq 4 $N); do
+    # Get the sample name from the header (column $i)
+    sample=$(head -n 1 "$OUTDIR/mb2_master_depth.txt" | cut -f $i)
+    
+    # Create the single-column depth file for this sample (Corrected syntax)
+    grep -v totalAvgDepth "$OUTDIR/mb2_master_depth.txt" | cut -f 1,$i > "$OUTDIR/mb2_${sample%.*}.txt"
+    
+    # Write the path to the abundance list (Simplified, removing the unnecessary if/else)
+    echo "$OUTDIR/mb2_${sample%.*}.txt" >> "$OUTDIR/mb2_abund_list.txt"
+done
+
+# --- 3. RUN MAXBIN2 ---
+run_MaxBin.pl \
+    -contig "$CONTIGS" \
+    -markerset 107 \
+    -thread "$THREADS" \
+    -min_contig_length 2500 \
+    -out "$OUTDIR/maxbin2_out/bin" \
+    -abund_list "$OUTDIR/mb2_abund_list.txt"
+
+# --- 4. CLEANUP AND RENAMING ---
+mkdir -p "$OUTDIR/maxbin2_bins"
+for i in "$OUTDIR/maxbin2_out"/*.fasta; do
+    # Corrected variable substitution: ${i/.fasta/.fa}
+    mv "$i" "$OUTDIR/maxbin2_bins/$(basename ${i/.fasta/.fa})"
+done
