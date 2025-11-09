@@ -1,0 +1,16 @@
+coverm genome \
+      -b reads_to_contigs_trial.sorted.bam \
+      --genome-fasta-files /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/Trial_Run/HM_Trial_Assemblies \
+      -m relative_abundance \
+      -t 40 \
+      --min-covered-fraction 0 \
+      > relative_abundance.tsv
+
+#Run coverm for the eukaryotic assessment pipeline
+coverm genome \
+      -s - \
+      -b reads_to_contigs_trial.sorted.bam \
+      -m relative_abundance count mean covered_fraction \
+      -t 50 \
+      --min-covered-fraction 0 \
+      > eukaryotic_metrics.tsv
