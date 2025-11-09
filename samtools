@@ -1,0 +1,8 @@
+# Map reads to assembly using Bowtie2
+bowtie2 \
+    --time \
+    --threads 40 \
+    -x /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/Trial_Run/bowtie2_index \
+    -1 /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/Trial_Run/non_host_HM_trial_R1.fastq \
+    -2 /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/Trial_Run/non_host_HM_trial_R2.fastq \
+| samtools sort -@ 40 -o reads_to_contigs_trial.sorted.bam
