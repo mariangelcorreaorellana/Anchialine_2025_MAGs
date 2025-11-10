@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# --- VARIABLES ---
+# **EDIT THESE TWO LINES** if needed
+OUTDIR="concoct_output"
+CONTIGS="/stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/Trial_Run/HM_Trial_Assemblies/final.contigs.fa"
+BAMFILE="reads_to_contigs_trial.sorted.bam"
+
+THREADS=30
+CONCOCT_ENV="concoct_env" 
+
+# Create the primary output directory
+mkdir -p "$OUTDIR"
+
+# --- 1. CUT FASTA (CONCOCT_ENV) ---
+# Creates 10k windows and saves the BED and FASTA files
+echo "--- 1. Cutting FASTA into 10k fragments..."
+conda run -n "$CONCOCT_ENV" cut_up_fasta.py "$CONTIGS" -c 10000 --merge_last -b "$OUTDIR/assembly_10K.bed" -o 0 > "$OUTDIR/assembly_10K.fa"
+
+# --- 2. CALCULATE COVERAGE TABLE (CONCOCT_ENV) ---
+# Creates the depth file used by CONCOCT
+echo "--- 2. Calculating coverage table..."
+# NOTE: Requires your BAM file ($BAMFILE) to have an index (.bai)
+conda run -n "$CONCOCT_ENV" concoct_coverage_table.py "$OUTDIR/assembly_10K.bed" "$BAMFILE" > "$OUTDIR/concoct_depth.txt"
+
+# --- 3. RUN CONCOCT BINNING (CONCOCT_ENV) ---
+# Performs clustering on the 10k windows
+echo "--- 3. Running CONCOCT clustering..."
+conda run -n "$CONCOCT_ENV" concoct \
+    -l 1500 \
+    -t "$THREADS" \
+    --coverage_file "$OUTDIR/concoct_depth.txt" \
+    --composition_file "$OUTDIR/assembly_10K.fa" \
+    -b "$OUTDIR"
+
+# --- 4. MERGE CLUSTERING AND FIX HEADER (CONCOCT_ENV) ---
+echo "--- 4. Merging clustering results and fixing CSV header..."
+MERGED_FILE="$OUTDIR/clustering_gt1500_merged.csv"
+TEMP_FILE="$OUTDIR/merged_temp.csv"
+
+# a. Merge the clustering results (output is contig_id, cluster_id)
+conda run -n "$CONCOCT_ENV" merge_cutup_clustering.py "$OUTDIR/clustering_gt1500.csv" > "$MERGED_FILE"
+
+# b. FIX: The merge script doesn't output a header, but extract_fasta_bins.py requires it.
+mv "$MERGED_FILE" "$TEMP_FILE"
+echo "contig_id,cluster_id" > "$MERGED_FILE"
+cat "$TEMP_FILE" >> "$MERGED_FILE"
+rm "$TEMP_FILE"
+
+# --- 5. SPLIT BINS (USING CONCOCT'S OWN UTILITY) ---
+# Creates the final FASTA files for each bin
+echo "--- 5. Extracting final FASTA bins..."
+mkdir -p "$OUTDIR/concoct_bins"
+conda run -n "$CONCOCT_ENV" extract_fasta_bins.py \
+    "$MERGED_FILE" \
+    "$CONTIGS" \
+    --output_path "$OUTDIR/concoct_bins"
+
+echo "CONCOCT pipeline finished. Bins are located in: $OUTDIR/concoct_bins"
