@@ -1,0 +1,15 @@
+checkm2 predict \
+    --threads 72 \
+    --input /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/Trial_Run/maxbin2_output/maxbin2_bins/ \
+    --output-directory checkm_out_maxbin2 \
+    --file-extension fa \
+    --taxonomy genome
+
+
+
+checkm2 predict \
+    --threads 72 \
+    --input /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/Trial_Run/metabat2_output/metabat2_bins \
+    --output-directory checkm_out_maxbin2 \
+    --file-extension fa \
+    --taxonomy genome
