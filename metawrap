@@ -1,0 +1,7 @@
+conda run -n metawrap-env metawrap bin_refinement \
+    -o BIN_REFINEMENT \
+    -t 30 \
+    -A /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/Trial_Run/metabat2_output/metabat2_bins \
+    -B /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/Trial_Run/maxbin2_output/maxbin2_bins \
+    -C /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/Trial_Run/concoct_output/fasta_bins \
+    -c 50 -x 10
