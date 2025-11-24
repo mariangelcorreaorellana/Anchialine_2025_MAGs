@@ -1,0 +1,2 @@
+cat /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/sample_reads/HM_2025_WGS/HM-24_S1_L001_R1_001.fastq.gz /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/sample_reads/HM_2025_WGS/HM-24_S7_L002_R1_001.fastq.gz > HM_combined_R1.fastq.gz
+cat /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/sample_reads/HM_2025_WGS/HM-24_S1_L001_R2_001.fastq.gz /stor/work/Zamudio/Mariangel/Anchialine_DNA_2025/sample_reads/HM_2025_WGS/HM-24_S7_L002_R2_001.fastq.gz > HM_combined_R2.fastq.gz
